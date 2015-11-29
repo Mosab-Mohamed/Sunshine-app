@@ -1,5 +1,7 @@
 package com.example.android.sunshine.app;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,8 +14,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -89,9 +93,6 @@ public class ForecastFragment extends Fragment {
             int numDays = 7 ;
 
             try {
-
-
-                Log.v("11mmmmmmmmmmmmmmmmmmmmmmmmmmmmm","???????????????????????");
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are avaiable at OWM's forecast API page, at
                 // http://openweathermap.org/API#forecast
@@ -112,14 +113,11 @@ public class ForecastFragment extends Fragment {
 
                 URL url = new URL(builtUri.toString());
 
-                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
-
                 // Create the request to OpenWeatherMap, and open the connection
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
-                Log.v("33mmmmmmmmmmmmmmmmmmmmmmmmmmmmm","???????????????????????");
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
@@ -143,8 +141,6 @@ public class ForecastFragment extends Fragment {
                     return null;
                 }
                 forecastJsonStr = buffer.toString();
-                Log.v("22mmmmmmmmmmmmmmmmmmmmmmmmmmmmm","???????????????????????");
-                Log.v(LOG_TAG,"the json string ====> " + forecastJsonStr);
 
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
@@ -211,9 +207,23 @@ public class ForecastFragment extends Fragment {
                 ,weekForecast);
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
-
         listView.setAdapter(ad);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                String forecast = ad.getItem(position);
+                int duration = Toast.LENGTH_SHORT;
+                Context context = getActivity().getApplicationContext();
+                Intent intent = new Intent(
+                        getActivity()
+                        ,DetailActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT, forecast);
+                startActivity(intent);
+            }
+        });
 
 
         return rootView;
